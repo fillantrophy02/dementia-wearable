@@ -38,19 +38,20 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1):
     return results
 
 if __name__ == '__main__':
-    model = SleepPatchTST(input_size=input_size).to(device)
     avg_results = {}
 
     for fold in range(k_folds):
+        model = SleepPatchTST(input_size=input_size).to(device)
         model.load_state_dict(torch.load(f"ckpts/model_{fold}.pth"))
         results = eval_model(model, fold=fold)
 
         for key, value in results.items():
-            if key not in avg_results:
-                avg_results[key] = []
-            avg_results[key].append(value)
+            base_key = f"{key.split('_')[0]}_{key.split('_')[-1]}"
+            if base_key not in avg_results:
+                avg_results[base_key] = []
+            avg_results[base_key].append(value)
 
-    print(f"Average result across {k_folds} folds:")
+    print(f"\n\nAverage result across {k_folds} folds:")
     for key in avg_results:
         avg_results[key] = sum(avg_results[key]) / k_folds
-        print(f"{key}: {value:.4f}")
+        print(f"{key}: {avg_results[key]:.4f}")

@@ -12,7 +12,7 @@ class DataProcessing():
 
     def create_csv_file(self, type: DataType):
         fp = 'data/processed-data/dataset.csv'
-        self._create_dataframe(type)
+        self._create_dataframe(type) 
         self.df.to_csv(fp, index=False)
         return self.df
     
@@ -20,7 +20,7 @@ class DataProcessing():
         fp = self._build_filepath(type)
         self.df = pd.read_csv(fp)
         self.df = self._sort_columns(self.df)
-        self._drop_columns_with_too_many_missing_values()
+        self._drop_columns_with_too_many_missing_values() # 38 -> 28 columns
         self._interpolate_missing_values()
         return self.df
     

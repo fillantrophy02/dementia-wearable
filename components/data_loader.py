@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from config import *
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import GroupKFold, KFold, train_test_split
 
 
 class DataframeLoader():
@@ -19,14 +19,18 @@ class DataframeLoader():
         df = pd.read_csv(fp)
         return df
     
-    def split_df_into_sequences_with_labels(self) -> tuple:
-        self.df = self.df.sort_values(by=['participant', 'date'])
-        feature_cols = [col for col in self.df.columns if col not in (['date', 'label'] + excluded_features)]        
+    def get_df(self):
+        return self.df
+    
+    @classmethod
+    def split_df_into_sequences_with_labels(cls, df) -> tuple:
+        df = df.sort_values(by=['participant', 'date'])
+        feature_cols = [col for col in df.columns if col not in (['date', 'label'] + excluded_features)]        
         num_features = len(feature_cols)
         all_x = np.empty((0, seq_length, num_features))
         all_y = np.empty((0, 1))
 
-        for _, group in self.df.groupby('participant'):
+        for _, group in df.groupby('participant'):
             group = group.set_index('date')  # Set date as index
             values = group[feature_cols + ['label']].to_numpy()
 
@@ -121,17 +125,25 @@ class SleepDataset(Dataset):
         y = torch.tensor(self.y[index], dtype=torch.long)
         return xs, y
     
-x, y = DataframeLoader().split_df_into_sequences_with_labels()
-kf = KFold(n_splits=k_folds, shuffle=True, random_state=42)
+
+kf = GroupKFold(n_splits=k_folds, shuffle=True, random_state=40)
+df = DataframeLoader().get_df()
+
 train_dataloaders = []
 val_dataloaders = []
 
-for fold, (train_idx, val_idx) in enumerate(kf.split(x)):
-    print(f"Fold {fold+1}/{k_folds}")
+for fold, (train_idx, val_idx) in enumerate(kf.split(df, groups=df['participant'])):
+    print(f"\nFold {fold+1}/{k_folds}")
+
+    # Split df by index
+    df_train = df.iloc[train_idx]
+    df_val = df.iloc[val_idx]
+
+    # Split into sequences
+    x_train, y_train = DataframeLoader.split_df_into_sequences_with_labels(df_train)
+    x_val, y_val = DataframeLoader.split_df_into_sequences_with_labels(df_val)
 
     # Create dataset
-    x_train, x_val = x[train_idx], x[val_idx]
-    y_train, y_val = y[train_idx], y[val_idx]
     train_ds = SleepDataset(x_train, y_train, "train", activate_undersampling=False, scaler=None)
     val_ds = SleepDataset(x_val, y_val, "val", activate_undersampling=False, scaler=train_ds.scaler)
     print(f"Train: {len(train_ds)} samples")
@@ -150,9 +162,9 @@ for fold, (train_idx, val_idx) in enumerate(kf.split(x)):
     train_dataloaders.append(train_loader)
     val_dataloaders.append(val_loader)
 
+    train_ds.report()
+    val_ds.report()
+
 sample_train_features_batch, sample_train_labels_batch = next(iter(train_loader))
 print(f"\nFeature batch shape: {sample_train_features_batch.size()}")
 print(f"Labels batch shape: {sample_train_labels_batch.size()}")
-
-train_ds.report()
-val_ds.report()
