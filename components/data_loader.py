@@ -24,7 +24,7 @@ class DataframeLoader():
         feature_cols = [col for col in self.df.columns if col not in (['date', 'label'] + excluded_features)]        
         num_features = len(feature_cols)
         all_x = np.empty((0, seq_length, num_features))
-        all_y = np.empty((0, 1, 1))
+        all_y = np.empty((0, 1))
 
         for _, group in self.df.groupby('participant'):
             group = group.set_index('date')  # Set date as index
@@ -34,7 +34,7 @@ class DataframeLoader():
                 all_data = np.lib.stride_tricks.sliding_window_view(values, seq_length, axis=0)  # (N, num_features, seq_length+target_seq-1)
                 all_data = np.transpose(all_data, (0, 2, 1)) # (N, seq_length+target_seq-1, num_features)
                 x_data = all_data[:, 0:seq_length, :-1] # (N, seq_length, num_features)
-                y_data = all_data[:, seq_length-1:, -1:] # (N, target_seq_length, 1)
+                y_data = all_data[:, seq_length-1, -1:] # (N, target_seq_length, 1)
 
                 all_x = np.concatenate((all_x, x_data), axis=0)
                 all_y = np.concatenate((all_y, y_data), axis=0)
@@ -103,8 +103,8 @@ class SleepDataset(Dataset):
         return samples_weight
 
     def report(self):
-        num_label_0 = (self.y[:, 0, :] == 0).sum() # only consider 'today' for label
-        num_label_1 = (self.y[:, 0, :] == 1).sum()
+        num_label_0 = (self.y[:, :] == 0).sum() # only consider 'today' for label
+        num_label_1 = (self.y[:, :] == 1).sum()
         print(f"\n------ Stats for {self.split} --------")
         print(f"Number of samples with label 0: {num_label_0}")
         print(f"Number of samples with label 1: {num_label_1}")

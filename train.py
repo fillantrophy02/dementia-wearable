@@ -3,7 +3,7 @@ import sys
 import torch
 from components.early_stopper import EarlyStopper
 from components.model import SleepPatchTST
-from components.data_loader import train_dataloader, test_dataloader, input_size
+from components.data_loader import train_dataloader
 from components.metrics import Metrics
 from config import *
 from eval import eval_model

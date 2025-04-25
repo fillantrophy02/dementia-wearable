@@ -3,9 +3,9 @@ import torch
 import torchmetrics
 from components.experiment_recorder import log_model_metric
 from components.model import SleepPatchTST
-from components.data_loader import val_dataloader, input_size
+from components.data_loader import val_dataloader
 from components.metrics import Metrics, plot_and_save_auc_curve
-from config import device, num_epochs
+from config import *
 
 def eval_model(model, epoch=num_epochs-1):
     model.eval()
