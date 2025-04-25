@@ -5,3 +5,4 @@
 | Activities + Heart rate | 0.9901 |
 | Main sleep | 0.6332 | 
 | Naps | 0.8339 |
+| Activites + Main sleep | 0.9474 |
