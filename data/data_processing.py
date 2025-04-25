@@ -34,7 +34,7 @@ class DataProcessing():
         return fp
     
     def _merge_dfs(self, dfs):
-        return reduce(lambda left, right: pd.merge(left, right, on=['participant', 'date'], how='inner'), dfs)
+        return reduce(lambda left, right: pd.merge(left, right, on=['participant', 'date', 'label', 'age', 'race'], how='inner'), dfs)
 
     def _sort_columns(self, df: pd.DataFrame):
         priority = {'participant': 0, 'date': 1, 'label': 99999}
