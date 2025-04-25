@@ -15,12 +15,12 @@ if not debug_mode:
     }
     mlflow.log_params(config_vars)
 
-def log_model_artifacts(model):
+def log_model_artifacts(model, fold=k_folds-1):
     if not debug_mode:
         with open("model_summary.txt", "w") as f:
             f.write(str(model))
         mlflow.log_artifact("model_summary.txt")
-        mlflow.log_artifact("ckpts/model.pth")
+        mlflow.log_artifact(f"ckpts/model_{fold}.pth")
         mlflow.pytorch.log_model(model, "model")
 
 def log_model_metric(name, value, epoch):

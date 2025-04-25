@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from config import *
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold, train_test_split
 
 
 class DataframeLoader():
@@ -122,26 +122,37 @@ class SleepDataset(Dataset):
         return xs, y
     
 x, y = DataframeLoader().split_df_into_sequences_with_labels()
-x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=val_split, random_state=42, shuffle=True)
-train_ds = SleepDataset(x_train, y_train, "train", activate_undersampling=False, scaler=None)
-val_ds = SleepDataset(x_val, y_val, "val", activate_undersampling=False, scaler=train_ds.scaler)
-print(f"Train: {len(train_ds)} samples")
-print(f"Val: {len(val_ds)} samples")
+kf = KFold(n_splits=k_folds, shuffle=True, random_state=42)
+train_dataloaders = []
+val_dataloaders = []
 
-# Ensure each batch has balanced representation of classes
-torch.manual_seed(24)
-samples_weight = train_ds.get_samples_weight()
-sampler = WeightedRandomSampler(samples_weight, len(samples_weight))
+for fold, (train_idx, val_idx) in enumerate(kf.split(x)):
+    print(f"Fold {fold+1}/{k_folds}")
 
-train_dataloader = DataLoader(train_ds, batch_size=batch_size, sampler=sampler)
-val_dataloader = DataLoader(val_ds, batch_size=batch_size, shuffle=True)
-# test_dataloader = DataLoader(test_ds, batch_size=batch_size, shuffle=True)
+    # Create dataset
+    x_train, x_val = x[train_idx], x[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+    train_ds = SleepDataset(x_train, y_train, "train", activate_undersampling=False, scaler=None)
+    val_ds = SleepDataset(x_val, y_val, "val", activate_undersampling=False, scaler=train_ds.scaler)
+    print(f"Train: {len(train_ds)} samples")
+    print(f"Val: {len(val_ds)} samples")
 
-sample_train_features_batch, sample_train_labels_batch = next(iter(train_dataloader))
-feature_batch_size = sample_train_features_batch.size()
-label_batch_size = sample_train_labels_batch.size()
-print(f"Feature batch shape: {feature_batch_size}") # (batch_size, seq_length, num_features)
-print(f"Labels batch shape: {label_batch_size}") # (batch_size, target_seq_length, 1)
+    # Weighted sampler for training
+    torch.manual_seed(24)
+    samples_weight = train_ds.get_samples_weight()
+    sampler = WeightedRandomSampler(samples_weight, len(samples_weight))
+
+    # Create dataloaders
+    train_loader = DataLoader(train_ds, batch_size=batch_size, sampler=sampler)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=True)
+
+    # Append to lists
+    train_dataloaders.append(train_loader)
+    val_dataloaders.append(val_loader)
+
+sample_train_features_batch, sample_train_labels_batch = next(iter(train_loader))
+print(f"\nFeature batch shape: {sample_train_features_batch.size()}")
+print(f"Labels batch shape: {sample_train_labels_batch.size()}")
 
 train_ds.report()
 val_ds.report()

@@ -81,3 +81,8 @@ def plot_and_save_auc_curve(filepath, y_true, y_pred):
     plt.savefig(filepath)
     plt.close()
     print(f"Saved ROC curve to {filepath}.")
+
+def get_metric_fold_name(fold=k_folds-1):
+    metric_fold_name = metric_to_choose_best_model.split('_')
+    metric_fold_name = f'{metric_fold_name[0]}_{fold}_{metric_fold_name[1]}'
+    return metric_fold_name

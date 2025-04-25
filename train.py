@@ -3,22 +3,23 @@ import sys
 import torch
 from components.early_stopper import EarlyStopper
 from components.model import SleepPatchTST
-from components.data_loader import train_dataloader
-from components.metrics import Metrics
+from components.data_loader import train_dataloaders
+from components.metrics import Metrics, get_metric_fold_name
 from config import *
 from eval import eval_model
 from components.experiment_recorder import log_model_artifacts, log_model_metric
 
-def train_model(model):
+def train_model(model, fold=k_folds-1): # default last k-fold split
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    metrics = Metrics(['auc', 'f1_score', 'cm'])
+    metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'train_{fold}_')
     best_score, best_state, best_epoch = 0, None, None
+    metric_fold_name = get_metric_fold_name(fold=fold)
     
     for epoch in range(num_epochs):
         model.train() 
         losses_per_batch = []
 
-        for batch in train_dataloader:
+        for batch in train_dataloaders[fold]:
             optimizer.zero_grad()
 
             inputs_batch, outputs_batch = batch
@@ -42,21 +43,22 @@ def train_model(model):
         print(f'\nEpoch [{epoch+1}/{num_epochs}]  ', f'loss: {avg_loss:.4f}', end='    ')
         metrics.report()
         
-        log_model_metric('loss', avg_loss, epoch)
+        log_model_metric(f'train_loss_{fold}', avg_loss, epoch)
         metrics.log_to_experiment_tracker(epoch)
         
         metrics.reset()
 
         if (epoch+1) % 1 == 0:
-            results = eval_model(model, epoch=epoch)
-            if results[metric_to_choose_best_model] > best_score:
-                best_score, best_state, best_epoch = results[metric_to_choose_best_model], copy.deepcopy(model.state_dict()), epoch
+            results = eval_model(model, epoch=epoch, fold=fold)
+            if results[metric_fold_name] > best_score:
+                best_score, best_state, best_epoch = results[metric_fold_name], copy.deepcopy(model.state_dict()), epoch
 
     print(f"\nEpoch {best_epoch} had the highest {metric_to_choose_best_model} at {best_score:.4f}. Saving model....")
-    torch.save(best_state, "ckpts/model.pth")
+    torch.save(best_state, f"ckpts/model_{fold}.pth")
     log_model_artifacts(model)
     print("Model saved.")
 
 if __name__ == '__main__':  
     model = SleepPatchTST(input_size=input_size).to(device)
-    train_model(model)
+    for fold in range(k_folds):
+        train_model(model, fold=fold)
