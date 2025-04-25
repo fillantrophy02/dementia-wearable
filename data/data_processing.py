@@ -1,29 +1,10 @@
-
-
-# Convert raw data to 'train.csv' and 'test.csv' that include 174 patients and 32 sleep features
-# Current implemented for sleep features only
-
+# only implemented for 'sleep', might expand to 'activity' and 'heart' also
 from enum import Enum
 import statistics
 import pandas as pd
 
-from data.utils import categorize_sleep_end_hour, categorize_sleep_start_hour, get_average, get_max, get_median
-
-
 class DataType(Enum):
-    ACTIVITY = 'activity'
-    MMSE = 'msse'
     SLEEP = 'sleep'
-
-class DataSet(Enum):
-    TRAIN = 'training'
-    TEST = 'validation'
-
-class DataFeature(Enum):
-    INPUT = 'origin'
-    OUTPUT = 'label'
-
-label_dict = {'CN': 0, 'MCI': 1, 'Dem': 1}
 
 class DataProcessing():
     def __init__(self):
@@ -31,80 +12,58 @@ class DataProcessing():
 
     def create_csv_file(self, type: DataType):
         fp = 'data/processed-data/dataset.csv'
-        df = self.create_combined_dataframe(type)
-        df.to_csv(fp, index=False)
-        return df
-
-    def create_combined_dataframe(self, type: DataType) -> pd.DataFrame:
-        df_train = self._create_dataframe(type, DataSet.TRAIN)
-        df_test = self._create_dataframe(type, DataSet.TEST)
-        df = pd.concat([df_train, df_test])
-        return df
+        self._create_dataframe(type)
+        self.df.to_csv(fp, index=False)
+        return self.df
     
-    def _create_dataframe(self, type: DataType, set: DataFeature):
-        fp = self._build_filepath(DataType.SLEEP, set, DataFeature.INPUT)
-        df = pd.read_csv(fp)
-        df = self._generate_features(df, type)
-        df = self._remove_irrelevant_features(df)
-        df = self._concatenate_output_column(df, type, set)
-        df = self._sort_columns(df)
-        return df
+    def _create_dataframe(self, type: DataType):
+        fp = self._build_filepath(type)
+        self.df = pd.read_csv(fp)
+        self.df = self._sort_columns(self.df)
+        self._drop_columns_with_too_many_missing_values()
+        self._interpolate_missing_values()
+        return self.df
     
-    def _build_filepath(self, type: DataType, set: DataSet, feature: DataFeature):
+    def _build_filepath(self, type: DataType):
         fp = 'data/raw-data' # base directory
-        fp += f'/{set.value}'
-        fp += f'/{feature.value}_data'
-        fp += f'/{type.value}'
-        fp += f'/{'train' if set == DataSet.TRAIN else 'val'}'
-        fp += f'_{type.value}'
-        fp += f'{'_label' if feature == DataFeature.OUTPUT else ''}'
-        fp += f'.csv'
+        fp += f'/{type.value}.csv'
         return fp
 
-    def _concatenate_output_column(self, df, type, set):
-        fp_output = self._build_filepath(type, set, DataFeature.OUTPUT)
-        df_output = pd.read_csv(fp_output)
-        df = df.merge(df_output, left_on='EMAIL', right_on='SAMPLE_EMAIL', how='left')
-        df['label'] = df['DIAG_NM'].map(label_dict)
-        df = df.drop(columns=df_output.columns)
-        return df
-
-    def _generate_features(self, df: pd.DataFrame, type: DataType):
-        '''See feature_selection.csv for more details'''
-        if type == DataType.SLEEP:
-            extra_stats_columns = pd.DataFrame({
-                'sleep_hr_max': df['CONVERT(sleep_hr_5min USING utf8)'].apply(get_max),
-                'sleep_hr_median': df['CONVERT(sleep_hr_5min USING utf8)'].apply(get_median),
-                'sleep_hypnogram_average': df['CONVERT(sleep_hypnogram_5min USING utf8)'].apply(get_average)
-            })
-
-            df['date'] = pd.to_datetime(df['sleep_bedtime_end']).dt.date
-
-            # If a person sleeps twice within the same day, shift it to the next day
-            df['date_offset'] = df.groupby(['EMAIL', 'date']).cumcount()  # Group by email and date
-            df['date'] = df['date'] + pd.to_timedelta(df['date_offset'], unit='D')  # Shift by days
-            df.drop(columns=['date_offset'], inplace=True)  # Clean up
-
-            sleep_start_hour = pd.to_datetime(df['sleep_bedtime_start']).dt.hour
-            sleep_start_cols = sleep_start_hour.apply(categorize_sleep_start_hour).apply(pd.Series)
-
-            sleep_end_hour = pd.to_datetime(df['sleep_bedtime_end']).dt.hour
-            sleep_end_cols = sleep_end_hour.apply(categorize_sleep_end_hour).apply(pd.Series)
-
-            df = pd.concat([df, extra_stats_columns, sleep_start_cols, sleep_end_cols], axis=1)
-            return df         
-
     def _sort_columns(self, df: pd.DataFrame):
-        priority = {'EMAIL': 0, 'date': 1, 'label': 99999}
+        priority = {'participant': 0, 'date': 1, 'label': 99999}
         sorted_columns = sorted(df.columns, key=lambda x: priority.get(x, 2))
         return df[sorted_columns]
+    
+    def _drop_columns_with_too_many_missing_values(self, threshold=0.3):
+        missing_fraction = self.df.isnull().mean() 
+        columns_to_drop = missing_fraction[missing_fraction > threshold].index  
+        self.df.drop(columns=columns_to_drop, inplace=True)
+        print(f"Dropping columns: {columns_to_drop}")
 
-    def _remove_irrelevant_features(self, df: pd.DataFrame):
-        id_column = 'EMAIL'
-        feature_selection_df = pd.read_csv('data/feature_selection.csv')
-        selected = feature_selection_df.loc[feature_selection_df["Chosen"] == 1, "Features"].to_list()
-        selected.insert(0, id_column)
-        return df[selected]
+    def _interpolate_missing_values(self):
+        self.df.interpolate(inplace=True, limit_direction='both')
+
+    def report(self):
+        num_columns = self.df.shape[1]
+        num_rows = self.df.shape[0]
+        if 'participant' in self.df.columns:
+            unique_locations = self.df['participant'].nunique()
+        avg_rows_per_location = num_rows / unique_locations if unique_locations > 0 else 0
+        num_empty_cells = self.df.isnull().sum().sum()
+        
+        report_str = (
+            f"Number of columns: {num_columns}\n"
+            f"Number of rows: {num_rows}\n"
+            f"Number of missing values: {num_empty_cells}\n"
+            f"Number of unique locations: {unique_locations}\n"
+            f"Average number of rows per location: {avg_rows_per_location:.0f}\n"
+        )
+        
+        print(report_str)
+        # print(self.df.head())
+        print(self.df.iloc[:20])
     
 if __name__ == '__main__':
-    DataProcessing().create_csv_file(DataType.SLEEP)
+    obj = DataProcessing()
+    obj.create_csv_file(DataType.SLEEP)
+    obj.report()
