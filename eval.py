@@ -3,7 +3,7 @@ import torch
 import torchmetrics
 from components.experiment_recorder import log_model_metric
 from components.model import SleepPatchTST
-from components.data_loader import test_dataloader, input_size
+from components.data_loader import val_dataloader, input_size
 from components.metrics import Metrics, plot_and_save_auc_curve
 from config import device, num_epochs
 
@@ -15,7 +15,7 @@ def eval_model(model, epoch=num_epochs-1):
         labels, preds, = [], []
         losses_per_batch = []
 
-        for batch in test_dataloader:
+        for batch in val_dataloader:
             inputs_batch, outputs_batch = batch
             inputs_re = inputs_batch.to(device)
             outputs_re = outputs_batch.to(device)

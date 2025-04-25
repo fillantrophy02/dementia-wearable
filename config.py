@@ -11,3 +11,7 @@ metric_to_choose_best_model = 'val_auc'
 hidden_size = 64
 num_time_features = 8
 prediction_length = 4
+excluded_features = []
+num_features = 25 - len(excluded_features)
+seq_length = no_of_days
+val_split = 0.2
