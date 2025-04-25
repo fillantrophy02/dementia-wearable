@@ -6,7 +6,7 @@ from components.model import SleepPatchTST
 from components.data_loader import train_dataloaders
 from components.metrics import Metrics, get_metric_fold_name
 from config import *
-from eval import eval_model
+from eval import eval_across_kfolds, eval_model
 from components.experiment_recorder import log_model_artifacts, log_model_metric
 
 def train_model(model, fold=k_folds-1): # default last k-fold split
@@ -62,3 +62,4 @@ if __name__ == '__main__':
     model = SleepPatchTST(input_size=input_size).to(device)
     for fold in range(k_folds):
         train_model(model, fold=fold)
+    eval_across_kfolds()

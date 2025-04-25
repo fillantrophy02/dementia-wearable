@@ -37,9 +37,8 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1):
         results = metrics.compute()
     return results
 
-if __name__ == '__main__':
+def eval_across_kfolds():
     avg_results = {}
-
     for fold in range(k_folds):
         model = SleepPatchTST(input_size=input_size).to(device)
         model.load_state_dict(torch.load(f"ckpts/model_{fold}.pth"))
@@ -55,3 +54,6 @@ if __name__ == '__main__':
     for key in avg_results:
         avg_results[key] = sum(avg_results[key]) / k_folds
         print(f"{key}: {avg_results[key]:.4f}")
+
+if __name__ == '__main__':
+    eval_across_kfolds()
