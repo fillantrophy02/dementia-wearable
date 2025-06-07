@@ -54,7 +54,7 @@ def train_model(model, fold=k_folds-1): # default last k-fold split
                 best_score, best_state, best_epoch = results[metric_fold_name], copy.deepcopy(model.state_dict()), epoch
 
     print(f"\nEpoch {best_epoch} had the highest {metric_to_choose_best_model} at {best_score:.4f}. Saving model....")
-    torch.save(best_state, f"ckpts/model_{fold}.pth")
+    torch.save(best_state, f"ckpts/model_{fold}{special_mode_suffix}.pth")
     log_model_artifacts(model, fold=fold)
     print("Model saved.")
 

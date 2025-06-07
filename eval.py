@@ -41,7 +41,7 @@ def eval_across_kfolds():
     avg_results = {}
     for fold in range(k_folds):
         model = SleepPatchTST(input_size=input_size).to(device)
-        model.load_state_dict(torch.load(f"ckpts/model_{fold}.pth"))
+        model.load_state_dict(torch.load(f"ckpts/model_{fold}{special_mode_suffix}.pth"))
         results = eval_model(model, fold=fold)
 
         for key, value in results.items():

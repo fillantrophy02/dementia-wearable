@@ -1,5 +1,7 @@
 import torch
 
+special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
+
 debug_mode = False # if True, will not log to mlflow
 
 naps = ['deep_count', 'deep_minutes', 'deep_thirtyDayAvgMinutes', 'light_count', 'light_minutes', 'light_thirtyDayAvgMinutes','rem_count', 'rem_minutes', 'rem_thirtyDayAvgMinutes','wake_count', 'wake_minutes', 'wake_thirtyDayAvgMinutes']
@@ -39,3 +41,5 @@ seq_length = no_of_days
 val_split = 0.2
 input_size = num_features
 k_folds = 5
+dropout = 0.5
+freeze_threshold = 0.5
