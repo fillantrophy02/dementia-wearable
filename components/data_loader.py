@@ -25,7 +25,7 @@ class DataframeLoader():
     @classmethod
     def split_df_into_sequences_with_labels(cls, df) -> tuple:
         df = df.sort_values(by=['participant', 'date'])
-        feature_cols = [col for col in df.columns if col not in (['date', 'label'] + excluded_features)]        
+        feature_cols = [col for col in df.columns if col in selected_features and col not in (['date', 'label'])]        
         num_features = len(feature_cols)
         all_x = np.empty((0, seq_length, num_features))
         all_y = np.empty((0, 1))

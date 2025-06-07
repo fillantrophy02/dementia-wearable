@@ -1,5 +1,6 @@
 import torch
 
+data_group = "Main sleep" # One of the keys in 'selected_features_list' below
 special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
@@ -25,6 +26,16 @@ heart = [
 ]
 common = ['age', 'race', 'gender']
 
+selected_features_list = {
+    "Activities": activity,
+    "Activities + Heart rate": activity + heart,
+    "Main sleep": main_sleep,
+    "Naps": naps,
+    "Activities + Main sleep": activity + naps,
+    "Activities + Heart rate + Main sleep": activity + heart + main_sleep,
+    "Activities + Heart rate + Naps": activity + heart + naps
+}
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 256
 num_epochs = 10
@@ -35,8 +46,8 @@ hidden_size = 64
 num_time_features = 8
 prediction_length = 4
 dropped_cols = []
-excluded_features = activity + heart + main_sleep
-num_features = 67 - len([x for x in excluded_features if x not in dropped_cols])
+selected_features = selected_features_list[data_group]
+num_features = len(selected_features)
 seq_length = no_of_days
 val_split = 0.2
 input_size = num_features
