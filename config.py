@@ -1,7 +1,7 @@
 import torch
 
-data_group = "Main sleep" # One of the keys in 'selected_features_list' below
-special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
+data_group = "Activities + Main sleep" # One of the keys in 'selected_features_list' below
+special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
 
@@ -38,7 +38,7 @@ selected_features_list = {
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 256
-num_epochs = 10
+num_epochs = 50
 no_of_days = 5
 num_layers = 3
 metric_to_choose_best_model = 'val_auc'

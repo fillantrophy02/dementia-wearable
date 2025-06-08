@@ -7,7 +7,7 @@ from components.data_loader import val_dataloaders
 from components.metrics import Metrics, plot_and_save_auc_curve
 from config import *
 
-def eval_model(model, epoch=num_epochs-1, fold=k_folds-1):
+def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_tracker=False):
     model.eval()
     metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'val_{fold}_')
 
@@ -30,9 +30,13 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1):
             metrics.update(pred, outputs_re)
 
         avg_loss = sum(losses_per_batch) / len(losses_per_batch)
+        print(f'val_{fold}_loss: {avg_loss:.4f}', end='    ')
         metrics.report()
-        log_model_metric(f'val_{fold}_loss', avg_loss, epoch)
-        metrics.log_to_experiment_tracker(epoch)
+
+        if log_to_experiment_tracker:
+            log_model_metric(f'val_{fold}_loss', avg_loss, epoch)
+            metrics.log_to_experiment_tracker(epoch)
+            
         # plot_and_save_auc_curve("visualizations/roc.png", np.array(labels), np.array(preds))
         results = metrics.compute()
     return results

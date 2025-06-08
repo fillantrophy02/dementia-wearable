@@ -50,6 +50,7 @@ def train_model(model, fold=k_folds-1): # default last k-fold split
 
         if (epoch+1) % 1 == 0:
             results = eval_model(model, epoch=epoch, fold=fold)
+            
             if results[metric_fold_name] > best_score:
                 best_score, best_state, best_epoch = results[metric_fold_name], copy.deepcopy(model.state_dict()), epoch
 
