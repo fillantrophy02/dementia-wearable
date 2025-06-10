@@ -7,7 +7,7 @@ from components.data_loader import val_dataloaders
 from components.metrics import Metrics, plot_and_save_auc_curve
 from config import *
 
-def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_tracker=False):
+def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_tracker=True):
     model.eval()
     metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'val_{fold}_')
 
@@ -36,7 +36,7 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_trac
         if log_to_experiment_tracker:
             log_model_metric(f'val_{fold}_loss', avg_loss, epoch)
             metrics.log_to_experiment_tracker(epoch)
-            
+
         # plot_and_save_auc_curve("visualizations/roc.png", np.array(labels), np.array(preds))
         results = metrics.compute()
     return results
@@ -46,7 +46,7 @@ def eval_across_kfolds():
     for fold in range(k_folds):
         model = SleepPatchTST(input_size=input_size).to(device)
         model.load_state_dict(torch.load(f"ckpts/model_{fold}{special_mode_suffix}.pth"))
-        results = eval_model(model, fold=fold)
+        results = eval_model(model, fold=fold, log_to_experiment_tracker=False)
 
         for key, value in results.items():
             base_key = f"{key.split('_')[0]}_{key.split('_')[-1]}"
