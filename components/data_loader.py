@@ -25,7 +25,8 @@ class DataframeLoader():
     @classmethod
     def split_df_into_sequences_with_labels(cls, df) -> tuple:
         df = df.sort_values(by=['participant', 'date'])
-        feature_cols = [col for col in df.columns if col in selected_features and col not in (['date', 'label'])]        
+        feature_cols = [col for col in df.columns if col in selected_features and col not in (['date', 'label'])]
+        feature_cols.insert(0, 'participant')      
         num_features = len(feature_cols)
         all_x = np.empty((0, seq_length, num_features))
         all_y = np.empty((0, 1))
@@ -131,6 +132,9 @@ df = DataframeLoader().get_df()
 
 train_dataloaders = []
 val_dataloaders = []
+val_ids = []
+val_num_days = [] 
+val_labels = []
 
 for fold, (train_idx, val_idx) in enumerate(kf.split(df, groups=df['participant'])):
     print(f"\nFold {fold+1}/{k_folds}")
@@ -142,6 +146,11 @@ for fold, (train_idx, val_idx) in enumerate(kf.split(df, groups=df['participant'
     # Split into sequences
     x_train, y_train = DataframeLoader.split_df_into_sequences_with_labels(df_train)
     x_val, y_val = DataframeLoader.split_df_into_sequences_with_labels(df_val)
+
+    # Store and remove participant id
+    x_train = x_train[:, :, 1:]
+    val_id = x_val[:, -1, 0]
+    x_val = x_val[:, :, 1:]
 
     # Create dataset
     train_ds = SleepDataset(x_train, y_train, "train", activate_undersampling=False, scaler=None)
@@ -156,11 +165,18 @@ for fold, (train_idx, val_idx) in enumerate(kf.split(df, groups=df['participant'
 
     # Create dataloaders
     train_loader = DataLoader(train_ds, batch_size=batch_size, sampler=sampler)
-    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
     # Append to lists
     train_dataloaders.append(train_loader)
     val_dataloaders.append(val_loader)
+
+    # Operations for majorty vote counting
+    val_num_day = {int(pid): list(val_id).count(pid) for pid in set(val_id)}
+    val_label = {int(pid): label[0] for pid, label in zip(val_id, y_val)}
+    val_ids.append(val_id)
+    val_num_days.append(val_num_day)
+    val_labels.append(val_label)
 
     train_ds.report()
     val_ds.report()

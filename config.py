@@ -1,6 +1,6 @@
 import torch
 
-data_group = "Activities + Heart rate + Naps" # One of the keys in 'selected_features_list' below
+data_group = "Activities + Heart rate + Main sleep" # One of the keys in 'selected_features_list' below
 special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
