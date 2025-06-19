@@ -1,7 +1,7 @@
 import torch
 
-data_group = "Activities + Heart rate" # One of the keys in 'selected_features_list' below
-special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
+data_group = "Activities + Heart rate + Naps" # One of the keys in 'selected_features_list' below
+special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
 
@@ -31,18 +31,19 @@ selected_features_list = {
     "Activities + Heart rate": activity + heart,
     "Main sleep": main_sleep,
     "Naps": naps,
-    "Activities + Main sleep": activity + naps,
+    "Activities + Main sleep": activity + main_sleep,
+    "Activities + Naps": activity + naps,
     "Activities + Heart rate + Main sleep": activity + heart + main_sleep,
     "Activities + Heart rate + Naps": activity + heart + naps
 }
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 256
-num_epochs = 10
+num_epochs = 30
 no_of_days = 5
-num_layers = 3
+num_layers = 1
 metric_to_choose_best_model = 'val_auc'
-hidden_size = 64
+hidden_size = 16
 prediction_length = 4
 dropped_cols = []
 selected_features = selected_features_list[data_group]
@@ -53,4 +54,4 @@ input_size = num_features
 k_folds = 5
 dropout = 0.5
 freeze_threshold = 0.5
-ffn_dim = 512
+ffn_dim = 16
