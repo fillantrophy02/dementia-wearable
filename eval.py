@@ -52,7 +52,8 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_trac
 
         # Calculate fraction of days labelled as MCI or not, then take AUC
         predicted_probs = {pid: num_positive_days[pid] / val_num_days[fold][pid] for pid in sorted(num_positive_days)}
-        majority_vote_auc = roc_auc_score(list(val_labels[fold].values()), list(predicted_probs.values()))
+        predicted_labels = {pid: 1 if prob >= 0.5 else 0 for pid, prob in predicted_probs.items()}
+        majority_vote_auc = roc_auc_score(list(val_labels[fold].values()), list(predicted_labels.values()))
 
     return results, majority_vote_auc
 
