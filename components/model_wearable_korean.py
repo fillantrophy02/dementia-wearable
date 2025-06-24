@@ -18,8 +18,9 @@ class WearableKoreanSleepPatchTST(nn.Module):
             patch_stride=1,
             num_hidden_layers=num_layers,
             d_model=hidden_size,
-            attention_dropout=0.5,
-            ff_dropout=0.5,
+            attention_dropout=dropout,
+            ff_dropout=dropout,
+            ffn_dim=ffn_dim,
             scaling=None,
             prediction_length=prediction_length,
             num_targets=input_size
