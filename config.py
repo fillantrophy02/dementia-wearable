@@ -5,8 +5,8 @@ special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
 
-naps = ['deep_count', 'deep_minutes', 'deep_thirtyDayAvgMinutes', 'light_count', 'light_minutes', 'light_thirtyDayAvgMinutes','rem_count', 'rem_minutes', 'rem_thirtyDayAvgMinutes','wake_count', 'wake_minutes', 'wake_thirtyDayAvgMinutes']
-main_sleep = ['asleep_count', 'asleep_minutes', 'awake_count', 'awake_minutes','restless_minutes', 'restless_count']
+naps =  ['minutesAfterWakeup', 'minutesAsleep', 'minutesAwake', 'minutesToFallAsleep', 'timeInBed', 'totalMinutesAsleep', 'totalSleepRecords', 'totalTimeInBed', 'asleep_count', 'asleep_minutes', 'restless_count', 'restless_minutes', 'awake_count', 'awake_minutes']
+main_sleep = ['minutesAfterWakeup', 'minutesAsleep', 'minutesAwake', 'minutesToFallAsleep', 'timeInBed', 'totalMinutesAsleep', 'totalSleepRecords', 'totalTimeInBed', 'deep_count', 'deep_minutes', 'deep_thirtyDayAvgMinutes', 'light_count', 'light_minutes', 'light_thirtyDayAvgMinutes', 'rem_count', 'rem_minutes', 'rem_thirtyDayAvgMinutes', 'wake_count', 'wake_minutes', 'wake_thirtyDayAvgMinutes']
 activity = [
     "activityCalories", "caloriesBMR", "caloriesOut", "elevation",
     "fairlyActiveMinutes", "floors", "lightlyActiveMinutes", "marginalCalories",
