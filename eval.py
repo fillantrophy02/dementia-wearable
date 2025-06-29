@@ -72,8 +72,8 @@ def eval_across_kfolds():
 
         majority_vote_aucs.append(majority_vote_auc)
 
-    print("majority_vote_val_auc:", np.nanmean(majority_vote_aucs))
     print(f"\n\nAverage result across {k_folds} folds:")
+    print("majority_vote_val_auc:", np.nanmean(majority_vote_aucs))
     for key in avg_results:
         avg_results[key] = sum(avg_results[key]) / k_folds
         print(f"{key}: {avg_results[key]:.4f}")

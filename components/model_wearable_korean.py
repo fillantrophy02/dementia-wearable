@@ -10,7 +10,7 @@ class WearableKoreanSleepPatchTST(nn.Module):
     def __init__(self):
         super().__init__()
 
-        input_size = 32
+        input_size = 10
         config = PatchTSTConfig(
             num_input_channels=input_size,
             context_length=no_of_days,
