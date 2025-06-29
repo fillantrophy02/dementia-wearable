@@ -2,7 +2,7 @@ import copy
 import sys
 import torch
 from components.early_stopper import EarlyStopper
-from components.model import SleepPatchTST
+from components.model import SleepLSTM, SleepPatchTST
 from components.data_loader import train_dataloaders
 from components.metrics import Metrics, get_metric_fold_name
 from config import *
@@ -55,12 +55,19 @@ def train_model(model, fold=k_folds-1): # default last k-fold split
                 best_score, best_state, best_epoch = results[metric_fold_name], copy.deepcopy(model.state_dict()), epoch
 
     print(f"\nEpoch {best_epoch} had the highest {metric_to_choose_best_model} at {best_score:.4f}. Saving model....")
-    torch.save(best_state, f"ckpts/model_{fold}{special_mode_suffix}.pth")
+    torch.save(best_state, f"ckpts/{chosen_model}_{fold}{special_mode_suffix}.pth")
     log_model_artifacts(model, fold=fold)
     print("Model saved.")
 
 if __name__ == '__main__':  
-    model = SleepPatchTST(input_size=input_size).to(device)
+    if chosen_model == "PatchTST":
+        model = SleepPatchTST(input_size=input_size)
+    elif chosen_model == "LSTM":
+        model = SleepLSTM(input_size=input_size)
+    else:
+        raise Exception(f"Model_{chosen_model} doesn't exist. Please select another value for 'chosen_moden' in 'config.py'.")
+    model = model.to(device)
+
     for fold in range(k_folds):
         train_model(model, fold=fold)
     eval_across_kfolds()

@@ -1,6 +1,7 @@
 import torch
 
 data_group = "TL_From_Korean" # One of the keys in 'selected_features_list' below
+chosen_model = "LSTM"
 special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow

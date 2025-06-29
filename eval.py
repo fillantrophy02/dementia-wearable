@@ -3,7 +3,7 @@ from sklearn.metrics import roc_auc_score
 import torch
 import torchmetrics
 from components.experiment_recorder import log_model_metric
-from components.model import SleepPatchTST
+from components.model import SleepLSTM, SleepPatchTST
 from components.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
 from components.metrics import Metrics, plot_and_save_auc_curve
 from config import *
@@ -60,8 +60,13 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_trac
 def eval_across_kfolds():
     avg_results, majority_vote_aucs = {}, []
     for fold in range(k_folds):
-        model = SleepPatchTST(input_size=input_size).to(device)
-        model.load_state_dict(torch.load(f"ckpts/model_{fold}{special_mode_suffix}.pth"))
+        if chosen_model == "PatchTST":
+            model = SleepPatchTST(input_size=input_size)
+        elif chosen_model == "LSTM":
+            model = SleepLSTM(input_size=input_size)
+
+        model = model.to(device)
+        model.load_state_dict(torch.load(f"ckpts/{chosen_model}_{fold}{special_mode_suffix}.pth"))
         results, majority_vote_auc = eval_model(model, fold=fold, log_to_experiment_tracker=False)
 
         for key, value in results.items():
