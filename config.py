@@ -1,7 +1,7 @@
 import torch
 
-data_group = "Activities + Heart rate + Naps" # One of the keys in 'selected_features_list' below
-special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
+data_group = "TL_From_Korean" # One of the keys in 'selected_features_list' below
+special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
 
@@ -25,6 +25,18 @@ heart = [
     "heartRateZone_Peak_min", "heartRateZone_Peak_minutes"
 ]
 common = ['age', 'race', 'gender']
+TL_from_Korean = [
+    'deep_minutes',
+    'light_minutes',
+    'asleep_minutes',
+    'activityCalories',
+    'caloriesOut',
+    'fairlyActiveMinutes',
+    'lightlyActiveMinutes',
+    'sedentaryMinutes',
+    'steps',
+    'veryActiveMinutes'
+]
 
 selected_features_list = {
     "Activities": activity,
@@ -34,7 +46,8 @@ selected_features_list = {
     "Activities + Main sleep": activity + main_sleep,
     "Activities + Naps": activity + naps,
     "Activities + Heart rate + Main sleep": activity + heart + main_sleep,
-    "Activities + Heart rate + Naps": activity + heart + naps
+    "Activities + Heart rate + Naps": activity + heart + naps,
+    "TL_From_Korean": TL_from_Korean
 }
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
