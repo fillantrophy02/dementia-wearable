@@ -1,5 +1,4 @@
 SleepPatchTST(
-  (reshape1): Linear(in_features=10, out_features=10, bias=True)
   (backbone): PatchTSTModel(
     (scaler): PatchTSTScaler(
       (scaler): PatchTSTNOPScaler()

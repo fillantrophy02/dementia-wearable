@@ -1,7 +1,7 @@
 import torch
 
 data_group = "TL_From_Korean" # One of the keys in 'selected_features_list' below
-special_mode_suffix = "_TL_Wearable_Korean" # Either "" or "_TL_Wearable_Korean"
+special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
 debug_mode = False # if True, will not log to mlflow
 
