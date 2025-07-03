@@ -20,7 +20,7 @@ def log_model_artifacts(model, fold=k_folds-1):
         with open("model_summary.txt", "w") as f:
             f.write(str(model))
         mlflow.log_artifact("model_summary.txt")
-        mlflow.log_artifact(f"ckpts/model_{fold}.pth")
+        mlflow.log_artifact(f"ckpts/{chosen_model}_{fold}{special_mode_suffix}.pth")
         mlflow.pytorch.log_model(model, "model")
 
 def log_model_metric(name, value, epoch):
