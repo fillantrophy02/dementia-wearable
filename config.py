@@ -1,6 +1,6 @@
 import torch
 
-data_group = "TL_From_Korean" # One of the keys in 'selected_features_list' below
+data_group = "Korean-Fitbit Common Features" # One of the keys in 'selected_features_list' below
 chosen_model = "PatchTST"
 special_mode_suffix = "" # Either "" or "_TL_Wearable_Korean"
 
@@ -26,7 +26,7 @@ heart = [
     "heartRateZone_Peak_min", "heartRateZone_Peak_minutes"
 ]
 common = ['age', 'race', 'gender']
-TL_from_Korean = [
+korean_fitbit_common_features = [
     'deep_minutes',
     'light_minutes',
     'asleep_minutes',
@@ -48,16 +48,16 @@ selected_features_list = {
     "Activities + Naps": activity + naps,
     "Activities + Heart rate + Main sleep": activity + heart + main_sleep,
     "Activities + Heart rate + Naps": activity + heart + naps,
-    "TL_From_Korean": TL_from_Korean
+    "Korean-Fitbit Common Features": korean_fitbit_common_features
 }
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 256
 num_epochs = 30
 no_of_days = 5
-num_layers = 1
-metric_to_choose_best_model = 'val_auc'
-hidden_size = 16
+num_layers = 3
+metric_to_choose_best_model = 'val_loss'
+hidden_size = 64
 prediction_length = 4
 dropped_cols = []
 selected_features = selected_features_list[data_group]
@@ -68,4 +68,4 @@ input_size = num_features
 k_folds = 5
 dropout = 0.5
 freeze_threshold = 0.5
-ffn_dim = 16
+ffn_dim = 512

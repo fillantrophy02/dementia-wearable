@@ -49,6 +49,7 @@ def eval_model(model, epoch=num_epochs-1, fold=k_folds-1, log_to_experiment_trac
 
         # plot_and_save_auc_curve("visualizations/roc.png", np.array(labels), np.array(preds))
         results = metrics.compute()
+        results[f'val_{fold}_loss'] = -avg_loss
 
         # Calculate fraction of days labelled as MCI or not, then take AUC
         predicted_probs = {pid: num_positive_days[pid] / val_num_days[fold][pid] for pid in sorted(num_positive_days)}

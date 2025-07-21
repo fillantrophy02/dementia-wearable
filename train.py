@@ -12,7 +12,7 @@ from components.experiment_recorder import log_model_artifacts, log_model_metric
 def train_model(model, fold=k_folds-1): # default last k-fold split
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'train_{fold}_')
-    best_score, best_state, best_epoch = 0, None, None
+    best_score, best_state, best_epoch = -9999999, None, None
     metric_fold_name = get_metric_fold_name(fold=fold)
     
     for epoch in range(num_epochs):
