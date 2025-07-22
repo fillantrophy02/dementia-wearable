@@ -6,9 +6,9 @@ from config import *
 from pretrained_for_TL.wearable_korean.patchtst import WearableKoreanPatchTST
 from transformers import PatchTSTConfig, PatchTSTModel
 
-class SleepPatchTST(nn.Module):
+class PatchTST(nn.Module):
     '''Expect input of size (N, L, H_in) where N = batch_size, L = length of sequence, H_in = input_size aka no. of features'''
-    def __init__(self, input_size):
+    def __init__(self):
         super().__init__()
 
         if is_transfer_learning:
@@ -63,24 +63,3 @@ class SleepPatchTST(nn.Module):
         x = self.sigmoid(self.fc(x))
         return x
     
-class SleepLSTM(nn.Module):
-    '''Expect input of size (N, L, H_in) where N = batch_size, L = length of sequence, H_in = input_size aka no. of features'''
-    def __init__(self, input_size):
-        super().__init__()
-        self.lstm = nn.LSTM(input_size, 128, 1, batch_first=True, dropout=0.5)
-        self.hidden1 = nn.Linear(128, hidden_size)
-        self.fc = nn.Linear(hidden_size, 1)
-        
-        self.activation = nn.ELU()
-        self.sigmoid = nn.Sigmoid()
-        self.loss = nn.BCELoss()
-        self.auc = torchmetrics.AUROC(task='binary')
-        self.cm = torchmetrics.ConfusionMatrix(task='binary')
-        self.f1_score = torchmetrics.F1Score(task='binary')
-
-    def forward(self, x):
-        x, (h, c) = self.lstm(x)
-        x = x[:, -1, :] # take only last time step
-        x = self.activation(self.hidden1(x))
-        x = self.sigmoid(self.fc(x))
-        return x

@@ -2,7 +2,7 @@
 import torch
 import data.fitbit_mci.feature_list as fitbit_mci_features
 
-dataset = "fitbit_mci"
+dataset = 'fitbit_mci'
 is_transfer_learning = True
 transfer_learning_dataset = "wearable_korean"
 
