@@ -3,27 +3,26 @@ import torch
 import torch.nn as nn
 import torchmetrics
 from config import *
+from pretrained_for_TL.wearable_korean import config as pretrained_config
 from transformers import PatchTSTConfig, PatchTSTModel
 
-class WearableKoreanSleepPatchTST(nn.Module):
+class WearableKoreanPatchTST(nn.Module):
     '''Expect input of size (N, L, H_in) where N = batch_size, L = length of sequence, H_in = input_size aka no. of features'''
     def __init__(self):
         super().__init__()
 
-        input_size = 10
         config = PatchTSTConfig(
-            num_input_channels=input_size,
-            context_length=no_of_days,
-            patch_length=2,
-            patch_stride=1,
-            num_hidden_layers=num_layers,
-            d_model=hidden_size,
-            attention_dropout=dropout,
-            ff_dropout=dropout,
-            ffn_dim=ffn_dim,
-            scaling=None,
-            prediction_length=prediction_length,
-            num_targets=input_size
+            num_input_channels=pretrained_config.input_size,
+            context_length=pretrained_config.no_of_days,
+            patch_length=pretrained_config.patch_length,
+            patch_stride=pretrained_config.patch_stride,
+            num_hidden_layers=pretrained_config.num_layers,
+            d_model=pretrained_config.hidden_size,
+            attention_dropout=pretrained_config.dropout,
+            ff_dropout=pretrained_config.dropout,
+            ffn_dim=pretrained_config.ffn_dim,
+            prediction_length=pretrained_config.prediction_length,
+            num_targets=pretrained_config.input_size
         )
 
         self.backbone = PatchTSTModel(config).to(device)

@@ -1,18 +1,8 @@
-
-import torch
+from data import fitbit_mci
 import data.fitbit_mci.feature_list as fitbit_mci_features
 
-dataset = "fitbit_mci"
-is_transfer_learning = True
-transfer_learning_dataset = "wearable_korean"
-
 data_group = "Korean-Fitbit Common Features" # One of the keys in '<dataset>.selected_features_list' 
-chosen_model = "PatchTST" # Either "PatchTST" or "LSTM"
-
-if dataset == "fitbit_mci":
-    selected_features = fitbit_mci_features.selected_features_list[data_group]
-data_path = f"data/{dataset}/processed-data/dataset.csv"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+selected_features = fitbit_mci_features.selected_features_list[data_group]
 batch_size = 256
 num_epochs = 30
 no_of_days = 5

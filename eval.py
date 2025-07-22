@@ -4,7 +4,8 @@ import torch
 import torchmetrics
 from components.experiment_recorder import log_model_metric
 from components.model import SleepLSTM, SleepPatchTST
-from components.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
+from config import *
+from data.fitbit_mci.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
 from components.metrics import Metrics, plot_and_save_auc_curve
 from config import *
 
@@ -67,7 +68,7 @@ def eval_across_kfolds():
             model = SleepLSTM(input_size=input_size)
 
         model = model.to(device)
-        model.load_state_dict(torch.load(f"ckpts/{chosen_model}_{fold}{special_mode_suffix}.pth"))
+        model.load_state_dict(torch.load(f"ckpts/{dataset}/{chosen_model}_{fold}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth"))
         results, majority_vote_auc = eval_model(model, fold=fold, log_to_experiment_tracker=False)
 
         for key, value in results.items():

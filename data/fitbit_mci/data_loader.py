@@ -15,8 +15,7 @@ class DataframeLoader():
         self.df = self._load_df()
 
     def _load_df(self):
-        fp = f"data/processed-data/dataset.csv"
-        df = pd.read_csv(fp)
+        df = pd.read_csv(data_path)
         return df
     
     def get_df(self):

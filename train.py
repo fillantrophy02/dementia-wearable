@@ -1,10 +1,10 @@
 import copy
 import sys
 import torch
-from components.early_stopper import EarlyStopper
 from components.model import SleepLSTM, SleepPatchTST
-from components.data_loader import train_dataloaders
+from data.fitbit_mci.data_loader import train_dataloaders
 from components.metrics import Metrics, get_metric_fold_name
+from config import *
 from config import *
 from eval import eval_across_kfolds, eval_model
 from components.experiment_recorder import log_model_artifacts, log_model_metric
@@ -55,7 +55,7 @@ def train_model(model, fold=k_folds-1): # default last k-fold split
                 best_score, best_state, best_epoch = results[metric_fold_name], copy.deepcopy(model.state_dict()), epoch
 
     print(f"\nEpoch {best_epoch} had the highest {metric_to_choose_best_model} at {best_score:.4f}. Saving model....")
-    torch.save(best_state, f"ckpts/{chosen_model}_{fold}{special_mode_suffix}.pth")
+    torch.save(best_state, f"ckpts/{dataset}/{chosen_model}_{fold}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
     log_model_artifacts(model, fold=fold)
     print("Model saved.")
 

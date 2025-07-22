@@ -3,6 +3,7 @@ from functools import reduce
 from enum import Enum
 import statistics
 import pandas as pd
+from config import *
 
 class DataType(Enum):
     SLEEP = 'sleep'
@@ -13,7 +14,7 @@ class DataProcessing():
         pass
 
     def create_csv_file(self):
-        fp = 'data/processed-data/dataset.csv'
+        fp = f'data/{dataset}/processed-data/dataset.csv'
         self._create_dataframe() 
         self.df.to_csv(fp, index=False)
         return self.df

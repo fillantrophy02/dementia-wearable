@@ -1,5 +1,5 @@
 import pandas as pd
-from data.data_processing import DataProcessing, DataType
+from data.wearable_korean.data_processing import DataProcessing, DataType
 import pytest
 
 @pytest.fixture(scope="module")
