@@ -81,6 +81,6 @@ if __name__ == '__main__':
     if dataset == 'fitbit_mci': # Perform k-fold cross validation
         for fold in range(k_folds):
             train_model(model, fold=fold)
-        eval_across_kfolds()
+        eval_across_kfolds(model=model)
     elif dataset == 'wearable_korean': # Perform normal validation
         train_model(model)

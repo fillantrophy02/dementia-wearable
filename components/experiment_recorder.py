@@ -17,13 +17,13 @@ if not debug_mode: # TODO fix this thing
     }
     mlflow.log_params(config_vars)
 
-def log_model_artifacts(model, fold=k_folds-1):
+def log_model_artifacts(model, fold=None):
     if not debug_mode:
         with open("model_summary.txt", "w") as f:
             f.write(str(model))
         mlflow.log_artifact("model_summary.txt")
         os.remove("model_summary.txt")
-        mlflow.log_artifact(f"ckpts/{dataset}/{chosen_model}_{fold}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
+        mlflow.log_artifact(f"ckpts/{dataset}/{chosen_model}{f'_{fold}' if fold else ''}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
         mlflow.pytorch.log_model(model, "model")
 
 def log_model_metric(name, value, epoch):
