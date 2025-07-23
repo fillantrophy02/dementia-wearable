@@ -4,28 +4,30 @@ from sklearn.metrics import roc_auc_score
 import torch
 import torchmetrics
 from components.experiment_recorder import log_model_metric
+from models.GRU import GRU
 from models.PatchTST import PatchTST
 from models.LSTM import LSTM
 from config import *
-from data.fitbit_mci.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
 from components.metrics import Metrics, plot_and_save_auc_curve
+from models.Time_Series_Transformer import TimeSeriesTransformer
+from models.Vanilla_Transformer import VanillaTransformer
 
 def eval_model(model, epoch=num_epochs-1, fold=None, log_to_experiment_tracker=True):
     model.eval()
     metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'val{f'_{fold}' if fold else ''}_')
 
+    if dataset == 'fitbit_mci':
+        from data.fitbit_mci.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
+        num_positive_days, day_idx = {pid: 0 for pid in val_num_days[fold].keys()}, 0
+        dataloader = val_dataloaders[fold]
+    elif dataset == 'wearable_korean':
+        from data.wearable_korean.data_loader import train_dataloader
+        dataloader = train_dataloader
+
     with torch.no_grad():
         labels, preds, = [], []
         losses_per_batch = []
 
-        if dataset == 'fitbit_mci':
-            num_positive_days = {pid: 0 for pid in val_num_days[fold].keys()}
-            day_idx = 0
-            dataloader = val_dataloaders[fold]
-        elif dataset == 'wearable_korean':
-            dataloader = None
-            pass
-            
         for batch in dataloader:
             inputs_batch, outputs_batch = batch
             inputs_re = inputs_batch.to(device)
@@ -91,7 +93,15 @@ if __name__ == '__main__':
         model = PatchTST()
     elif chosen_model == "LSTM":
         model = LSTM()
-
+    elif chosen_model == "GRU":
+        model = GRU()
+    elif chosen_model == "TimeSeriesTransformer":
+        model = TimeSeriesTransformer()
+    elif chosen_model == "VanillaTransformer":
+        model = VanillaTransformer()
+    else:
+        raise Exception(f"Model_{chosen_model} doesn't exist. Please select another value for 'chosen_moden' in 'config.py'.")
+    
     model = model.to(device)
 
     if dataset == 'fitbit_mci':

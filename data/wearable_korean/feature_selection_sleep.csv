@@ -1,0 +1,52 @@
+Features,Chosen,Need to be generated,Example,Notes
+sleep_awake,1,0,,
+sleep_bedtime_end,0,0,,
+sleep_bedtime_start,0,0,2020-10-18T18:38:28+09:00,
+sleep_breath_average,1,0,,
+sleep_deep,1,0,,
+sleep_duration,1,0,,
+sleep_efficiency,1,0,,
+sleep_hr_5min,0,0,0/53/53/53/54/55/56/56/57/56/59/59/57/58/58/55/56/55/54/54/52/51/51/51/52/54/52/52/52/52/53/53/54/54/55/53/53/54/0/53/54/53/0/58/52/52/53/54/54/54/54/54/57/54/54/52/54/53/51/52/50/50/50/51/50/50/51/50/51/50/51/51/51/52/55/54/0/,
+sleep_hr_average,1,0,,
+sleep_hr_lowest,1,0,,Equivalent to 'sleep_hr_min'
+sleep_hypnogram_5min,0,0,,
+sleep_is_longest,0,0,,
+sleep_light,1,0,,
+sleep_midpoint_at_delta,1,0,,
+sleep_midpoint_time,1,0,,
+sleep_onset_latency,1,0,,
+sleep_period_id,0,0,,
+sleep_rem,1,0,,
+sleep_restless,1,0,,
+sleep_rmssd,1,0,,Equivalent to 'mssd_average'
+sleep_rmssd_5min,0,0,,
+sleep_score,0,0,,
+sleep_score_alignment,0,0,,
+sleep_score_deep,0,0,,
+sleep_score_disturbances,0,0,,
+sleep_score_efficiency,0,0,,
+sleep_score_latency,0,0,,
+sleep_score_rem,0,0,,
+sleep_score_total,0,0,,
+sleep_temperature_delta,1,0,,
+sleep_temperature_deviation,1,0,,
+sleep_total,1,0,,
+CONVERT(sleep_hr_5min USING utf8),0,0,,
+CONVERT(sleep_hypnogram_5min USING utf8),0,0,4/2/2/2/2/1/1/2/2/2/2/2/4/4/4/1/1/4/4/4/2/2/2/1/1/1/1/1/1/1/1/1/1/3/1/1/1/1/1/1/1/1/2/2/2/1/1/1/1/1/2/2/3/3/2/1/1/1/1/1/1/1/4/4/2/4/2/2/3/2/2/2/2/2/2/2/2/2/2/2/3/3/2/2/2/2/2/2/4/4/4/4/4/4/4/4/4/2/2/2/3/2/2/3/2/2/2/2/2/2/2/4/3/3/3/4/4/4/4/2/2/3/3/4/4/4/4/,"1'=deep, '2'=light, '3'=REM, '4'=awake"
+CONVERT(sleep_rmssd_5min USING utf8),0,0,,
+sleep_hr_max,1,1,,Generated from 'CONVERT(sleep_hr_5min USING utf8)'
+sleep_hr_median,1,1,,Generated from 'CONVERT(sleep_hr_5min USING utf8)'
+sleep_hypnogram_average,1,1,,Generated from 'CONVERT(sleep_hypnogram_5min USING utf8)'
+start1,1,1,1,"1'=yes, '0' no; Whether sleep time start is in the zone (0-4); Generated from sleep_bedtime_start "
+start2,1,1,,4-8?
+start3,1,1,,8-12?
+start4,1,1,,12-16?
+start5,1,1,,16-20?
+start6,1,1,,20-24?
+end1,1,1,,"1'=yes, '0' no; Whether sleep time end is in the zone (0-4); Generated from sleep_bedtime_end"
+end2,1,1,,
+end3,1,1,,
+end4,1,1,,
+end5,1,1,,
+end6,1,1,,
+date,1,1,,"Additional column for LSTM, generated from 'sleep_bedtime_end' or 'activity_day_end'"

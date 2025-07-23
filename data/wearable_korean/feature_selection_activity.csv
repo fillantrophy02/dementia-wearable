@@ -1,0 +1,32 @@
+Features,Chosen,Need to be generated,Example,Notes
+date,1,1,,"Additional column for LSTM, generated from 'sleep_bedtime_end' or 'activity_day_end'"
+activity_average_met,1,0,,
+activity_cal_active,1,0,,
+activity_cal_total,1,0,,
+activity_class_5min,0,0,,Somehow is all NaN data
+activity_daily_movement,1,0,,
+activity_day_end,0,0,,"Temporarily don't categorize them similar to 'start1', 'start2' etc from sleep"
+activity_day_start,0,0,,
+activity_high,1,0,,
+activity_inactive,1,0,,
+activity_inactivity_alerts,1,0,,
+activity_low,1,0,,
+activity_medium,1,0,,
+activity_met_1min,0,0,,Somehow is all NaN data
+activity_met_min_high,1,0,,
+activity_met_min_inactive,1,0,,
+activity_met_min_low,1,0,,
+activity_met_min_medium,1,0,,
+activity_non_wear,1,0,,
+activity_rest,1,0,,
+activity_score,1,0,,
+activity_score_meet_daily_targets,1,0,,
+activity_score_move_every_hour,1,0,,
+activity_score_recovery_time,1,0,,
+activity_score_stay_active,1,0,,
+activity_score_training_frequency,1,0,,
+activity_score_training_volume,1,0,,
+activity_steps,1,0,,
+activity_total,1,0,,
+CONVERT(activity_class_5min USING utf8),0,0,,
+CONVERT(activity_met_1min USING utf8),0,0,,

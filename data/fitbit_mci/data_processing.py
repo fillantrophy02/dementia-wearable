@@ -14,7 +14,7 @@ class DataProcessing():
         pass
 
     def create_csv_file(self):
-        fp = f'data/{dataset}/processed-data/dataset.csv'
+        fp = data_path
         self._create_dataframe() 
         self.df.to_csv(fp, index=False)
         return self.df
