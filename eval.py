@@ -21,8 +21,8 @@ def eval_model(model, epoch=num_epochs-1, fold=None, log_to_experiment_tracker=T
         num_positive_days, day_idx = {pid: 0 for pid in val_num_days[fold].keys()}, 0
         dataloader = val_dataloaders[fold]
     elif dataset == 'wearable_korean':
-        from data.wearable_korean.data_loader import train_dataloader
-        dataloader = train_dataloader
+        from data.wearable_korean.data_loader import test_dataloader
+        dataloader = test_dataloader
 
     with torch.no_grad():
         labels, preds, = [], []

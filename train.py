@@ -17,7 +17,7 @@ def freeze_backbone(model, freeze=True):
 
 def train_model(model, fold=None): # default last k-fold split
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'train_{fold}_')
+    metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'train{f'_{fold}' if fold else ''}_')
     freeze_threshold_epoch = int(num_epochs * freeze_threshold)
     best_score, best_state, best_epoch = -9999999, None, None
 
@@ -76,9 +76,10 @@ def train_model(model, fold=None): # default last k-fold split
                 best_score, best_state, best_epoch = results[main_metric_name], copy.deepcopy(model.state_dict()), epoch
 
     print(f"\nEpoch {best_epoch} had the highest {metric_to_choose_best_model} at {best_score:.4f}. Saving model....")
-    torch.save(best_state, f"ckpts/{dataset}/{chosen_model}{f'_{fold}' if fold else ''}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
+    model_name = f"{chosen_model}{f'_{fold}' if fold else ''}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth"
+    torch.save(best_state, f"ckpts/{dataset}/{model_name}")
     log_model_artifacts(model, fold=fold)
-    print("Model saved.")
+    print(f"Model saved as {model_name}")
 
 if __name__ == '__main__':  
     if chosen_model == "PatchTST":

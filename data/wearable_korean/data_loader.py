@@ -140,7 +140,7 @@ print(f"Train: {len(train_ds)} samples, Test: {len(test_ds)} samples.")
 
 torch.manual_seed(24)
 train_dataloader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
-train_dataloader = DataLoader(test_ds, batch_size=batch_size, shuffle=True)
+test_dataloader = DataLoader(test_ds, batch_size=batch_size, shuffle=True)
 
 sample_train_features_batch, sample_train_labels_batch = next(iter(train_dataloader))
 feature_batch_size = sample_train_features_batch.size()

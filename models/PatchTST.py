@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 import torchmetrics
 from config import *
-from pretrained_for_TL.wearable_korean.patchtst import WearableKoreanPatchTST
+from pretrained_for_TL.fitbit_mci.PatchTST import FitbitMCIPatchTST
+from pretrained_for_TL.wearable_korean.PatchTST import WearableKoreanPatchTST
 from transformers import PatchTSTConfig, PatchTSTModel
 
 class PatchTST(nn.Module):
@@ -21,7 +22,7 @@ class PatchTST(nn.Module):
                 if transfer_learning_dataset == "wearable_korean":
                     pretrained = WearableKoreanPatchTST()
                 elif transfer_learning_dataset == "fitbit_mci":
-                    pass
+                    pretrained = FitbitMCIPatchTST()
 
                 self.reshape1 = nn.Linear(input_size, num_features)
                 pretrained.load_state_dict(torch.load(f'pretrained_for_TL/{transfer_learning_dataset}/{chosen_model}.pth'))
