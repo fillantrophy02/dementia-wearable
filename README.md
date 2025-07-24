@@ -9,6 +9,8 @@ This repo includes 2 publicly available datasets. The first is the Korean datase
 
 ## 🔧 Setup
 
+0. Request data for the `data/fitbit_mci/raw-data` and `data/wearable_korean/raw-data` folders.
+
 1. Create a virtual environment:
    ```bash
    python -m venv .venv
@@ -53,7 +55,7 @@ The following model checkpoints are saved in `ckpts/{dataset}`:
 
 | Dataset | Name | Model | Data group | Is transfer learning? | Val AUC |
 | - | - | - | - | - | - |
-| Fitbit | `PatchTST_N.pth` where `N = 0..4`| PatchTST | Activities + Heart rate + Main sleep | N | TODO |
-| Fitbit | `PatchTST_N_TL_wearable_korean.pth` where `N = 0..4`| PatchTST | Korean-Fitbit Common Features | Y | TODO |
+| Fitbit | `PatchTST_N.pth` where `N = 0..4`| PatchTST | Activities + Heart rate + Main sleep | N | 1.00 |
+| Fitbit | `PatchTST_N_TL_wearable_korean.pth` where `N = 0..4`| PatchTST | Korean-Fitbit Common Features | Y | 0.68 |
 | Korean | `PatchTST.pth` | PatchTST | Sleep | N | 0.94 |
 | Korean | `PatchTST_TL_fitbit_mci.pth` | PatchTST | Korean-Fitbit Common Features | Y | 0.92 |

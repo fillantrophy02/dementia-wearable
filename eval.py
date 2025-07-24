@@ -14,7 +14,7 @@ from models.Vanilla_Transformer import VanillaTransformer
 
 def eval_model(model, epoch=num_epochs-1, fold=None, log_to_experiment_tracker=True):
     model.eval()
-    metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'val{f'_{fold}' if fold else ''}_')
+    metrics = Metrics(['auc', 'f1_score', 'cm'], prefix=f'val{f'_{fold}' if fold is not None else ''}_')
 
     if dataset == 'fitbit_mci':
         from data.fitbit_mci.data_loader import val_dataloaders, val_ids, val_num_days, val_labels
@@ -51,15 +51,15 @@ def eval_model(model, epoch=num_epochs-1, fold=None, log_to_experiment_tracker=T
                     day_idx += 1
 
         avg_loss = sum(losses_per_batch) / len(losses_per_batch)
-        print(f'val{f'_{fold}' if fold else ''}_loss: {avg_loss:.4f}', end='    ')
+        print(f'val{f'_{fold}' if fold is not None else ''}_loss: {avg_loss:.4f}', end='    ')
         metrics.report()
 
         if log_to_experiment_tracker:
-            log_model_metric(f'val{f'_{fold}' if fold else ''}_loss', avg_loss, epoch)
+            log_model_metric(f'val{f'_{fold}' if fold is not None else ''}_loss', avg_loss, epoch)
             metrics.log_to_experiment_tracker(epoch)
 
         results = metrics.compute()
-        results[f'val{f'_{fold}' if fold else ''}_loss'] = -avg_loss
+        results[f'val{f'_{fold}' if fold is not None else ''}_loss'] = -avg_loss
 
         if dataset == 'fitbit_mci':
             # Calculate fraction of days labelled as MCI or not, then take AUC

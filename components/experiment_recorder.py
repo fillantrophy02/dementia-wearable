@@ -23,7 +23,7 @@ def log_model_artifacts(model, fold=None):
             f.write(str(model))
         mlflow.log_artifact("model_summary.txt")
         os.remove("model_summary.txt")
-        mlflow.log_artifact(f"ckpts/{dataset}/{chosen_model}{f'_{fold}' if fold else ''}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
+        mlflow.log_artifact(f"ckpts/{dataset}/{chosen_model}{f'_{fold}' if fold is not None else ''}{f'_TL_{transfer_learning_dataset}' if is_transfer_learning else ''}.pth")
         mlflow.pytorch.log_model(model, "model")
 
 def log_model_metric(name, value, epoch):
