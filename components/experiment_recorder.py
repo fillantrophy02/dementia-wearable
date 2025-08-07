@@ -5,17 +5,17 @@ import config
 from config import *
 
 debug_mode = False
-if not debug_mode: # TODO fix this thing
-    mlflow.set_tracking_uri("http://localhost:5000")
-    mlflow.start_run()
 
-    # Log config.py variables aka hyperparams
-    config_vars = {
-        key: getattr(config, key)
-        for key in dir(config)
-        if not key.startswith('__')
-    }
-    mlflow.log_params(config_vars)
+mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.start_run()
+
+# Log config.py variables aka hyperparams
+config_vars = {
+    key: getattr(config, key)
+    for key in dir(config)
+    if not key.startswith('__')
+}
+mlflow.log_params(config_vars)
 
 def log_model_artifacts(model, fold=None):
     if not debug_mode:
@@ -29,3 +29,4 @@ def log_model_artifacts(model, fold=None):
 def log_model_metric(name, value, epoch):
     if not debug_mode:
         mlflow.log_metric(name, value, epoch)
+
